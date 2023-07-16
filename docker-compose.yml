@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: TakTokPGDB
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: '${PG_USER}'
+      POSTGRES_PASSWORD: '${PG_PASS}'
+      PGDATA: /data/postgres
+    ports:
+      - '${PG_PORT}:5432'
+    volumes:
+      - postgres:/data/postgres
+
+volumes:
+  postgres:
