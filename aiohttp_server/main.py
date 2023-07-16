@@ -1,6 +1,8 @@
 import argparse
 
 from aiohttp import web
+from core.settings import settings
+from routes import setup_routes
 
 
 def init_args() -> argparse.Namespace:
@@ -11,8 +13,14 @@ def init_args() -> argparse.Namespace:
 
 
 def run_server():
+    args = init_args()
     app = web.Application()
-    web.run_app(app)
+    setup_routes(app)
+    web.run_app(
+        app,
+        host=args.host if args.host else settings.HOST,
+        port=args.port if args.port else settings.PORT
+    )
 
 
 if __name__ == "__main__":

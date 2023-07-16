@@ -22,3 +22,6 @@ class __Settings:
     PG_DB: str = os.environ.get('PG_DB')
 
     PG_DSN: str = f"{PG_USER}:{PG_PASS}@{PG_HOST}:{PG_PORT}/{PG_DB}"
+
+
+settings = __Settings()
