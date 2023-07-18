@@ -20,4 +20,4 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Run Flake8
-        run: flake8 .\aiohttp_server\
+        run: flake8 aiohttp_server/
