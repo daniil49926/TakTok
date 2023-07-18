@@ -1,6 +1,7 @@
 def load_environ(base_dir: str) -> None:
     """
-    The environment variables file must be on the same level as the base directory of the application
+    The environment variables file must be on the
+        same level as the base directory of the application
     :param base_dir: string value of the base directory of the application
     :type base_dir: str
     """
