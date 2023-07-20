@@ -51,11 +51,63 @@ async def create_all():
             OWNER to "{settings.PG_USER}"
         """
     )
+    await conn.execute(
+        """
+        CREATE SEQUENCE IF NOT EXISTS public."TakVideo_id_seq"
+        INCREMENT 1
+        START 1
+        MINVALUE 1
+        MAXVALUE 2147483647
+        CACHE 1
+        """
+    )
+    await conn.execute(
+       f"""
+       ALTER SEQUENCE public."TakVideo_id_seq"
+            OWNER TO "{settings.PG_USER}"
+       """
+    )
+    await conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS public."TakVideo"
+        (
+            id integer NOT NULL DEFAULT nextval('"TakVideo_id_seq"'::regclass),
+            title character varying(50) COLLATE pg_catalog."default" NOT NULL,
+            description character varying(500) COLLATE pg_catalog."default" NOT NULL,
+            file_path character varying(1000) COLLATE pg_catalog."default" NOT NULL,
+            create_at timestamp without time zone,
+            Profile_id integer,
+            in_ban_list integer,
+            CONSTRAINT "TakVideo_pkey" PRIMARY KEY (id),
+            CONSTRAINT "TakVideo_Profile_id_fkey" FOREIGN KEY (Profile_id)
+                REFERENCES public."Profile" (id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE NO ACTION
+        )
+        """
+    )
+    await conn.execute(
+        f"""
+        ALTER TABLE IF EXISTS public."TakVideo"
+            OWNER to "{settings.PG_USER}"
+        """
+    )
+
     await conn.close()
 
 
 async def drop_all():
     conn = await _connect()
+    await conn.execute(
+        """
+        DROP TABLE IF EXISTS public."TakVideo"
+        """
+    )
+    await conn.execute(
+        """
+        DROP SEQUENCE IF EXISTS public."TakVideo_id_seq"
+        """
+    )
     await conn.execute(
         """
         DROP TABLE IF EXISTS public."Profile"
