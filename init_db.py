@@ -1,5 +1,6 @@
 import asyncio
 import asyncpg
+import argparse
 from aiohttp_server.core.settings import settings
 
 
@@ -7,7 +8,7 @@ async def _connect() -> asyncpg.Connection:
     return await asyncpg.connect(dsn=settings.PG_DSN)
 
 
-async def create_tables():
+async def create_all():
     conn = await _connect()
     await conn.execute(
         """
@@ -53,5 +54,28 @@ async def create_tables():
     await conn.close()
 
 
+async def drop_all():
+    conn = await _connect()
+    await conn.execute(
+        """
+        DROP TABLE IF EXISTS public."Profile"
+        """
+    )
+    await conn.execute(
+        """
+        DROP SEQUENCE IF EXISTS public."Profile_id_seq"
+        """
+    )
+
 if __name__ == "__main__":
-    asyncio.run(create_tables())
+    parser = argparse.ArgumentParser(description="TakTok Init DB script")
+    parser.add_argument(
+        "--mod",
+        help="Script modifier, either delete all entities - 0, or create all entities - 1.",
+        default=1
+    )
+    args = parser.parse_args()
+    coro = create_all if int(args.mod) else drop_all
+    asyncio.run(coro())
+
+
