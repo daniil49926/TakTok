@@ -100,6 +100,16 @@ async def drop_all():
     conn = await _connect()
     await conn.execute(
         """
+        DROP TABLE IF EXISTS public."TakVideo"
+        """
+    )
+    await conn.execute(
+        """
+        DROP SEQUENCE IF EXISTS public."TakVideo_id_seq"
+        """
+    )
+    await conn.execute(
+        """
         DROP TABLE IF EXISTS public."Profile"
         """
     )
