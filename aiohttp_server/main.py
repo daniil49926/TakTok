@@ -1,9 +1,10 @@
 import argparse
 
 from aiohttp import web
+from apps.profile.views import routes as routes_profile
+from apps.takvideo.views import routes as routes_tak
 from core.settings import settings
 from events import on_startup, on_shutdown
-from routes import setup_routes
 
 
 def init_args() -> argparse.Namespace:
@@ -16,7 +17,8 @@ def init_args() -> argparse.Namespace:
 def run_server() -> None:
     args = init_args()
     app = web.Application()
-    setup_routes(app)
+    app.add_routes(routes_profile)
+    app.add_routes(routes_tak)
     app.on_startup.append(on_startup)
     app.on_cleanup.append(on_shutdown)
     web.run_app(
