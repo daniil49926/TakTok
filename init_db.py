@@ -21,12 +21,6 @@ async def create_all():
         """
     )
     await conn.execute(
-        f"""
-        ALTER SEQUENCE public."Profile_id_seq"
-            OWNER TO "{settings.PG_USER}"
-        """
-    )
-    await conn.execute(
         """
         CREATE TABLE IF NOT EXISTS public."Profile"
         (
@@ -46,12 +40,6 @@ async def create_all():
         """
     )
     await conn.execute(
-        f"""      
-        ALTER TABLE IF EXISTS public."Profile"
-            OWNER to "{settings.PG_USER}"
-        """
-    )
-    await conn.execute(
         """
         CREATE SEQUENCE IF NOT EXISTS public."TakVideo_id_seq"
         INCREMENT 1
@@ -60,12 +48,6 @@ async def create_all():
         MAXVALUE 2147483647
         CACHE 1
         """
-    )
-    await conn.execute(
-       f"""
-       ALTER SEQUENCE public."TakVideo_id_seq"
-            OWNER TO "{settings.PG_USER}"
-       """
     )
     await conn.execute(
         """
@@ -84,12 +66,6 @@ async def create_all():
                 ON UPDATE NO ACTION
                 ON DELETE NO ACTION
         )
-        """
-    )
-    await conn.execute(
-        f"""
-        ALTER TABLE IF EXISTS public."TakVideo"
-            OWNER to "{settings.PG_USER}"
         """
     )
     await conn.execute(
@@ -120,12 +96,6 @@ async def create_all():
                 ON DELETE CASCADE
         )
         """
-    )
-    await conn.execute(
-        f"""
-            ALTER TABLE IF EXISTS public."TakVideoLikes"
-                OWNER to "{settings.PG_USER}"
-            """
     )
     await conn.close()
 
