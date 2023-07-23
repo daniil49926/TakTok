@@ -8,11 +8,13 @@ async def _connect() -> asyncpg.Connection:
     return await asyncpg.connect(dsn=settings.PG_DSN)
 
 
-async def create_all():
-    conn = await _connect()
-    await conn.execute(
-        """
-        CREATE SEQUENCE IF NOT EXISTS public."Profile_id_seq"
+async def create_sequence(
+    name_of_sequence: str,
+    open_conn: asyncpg.Connection
+) -> None:
+    await open_conn.execute(
+        f"""
+        CREATE SEQUENCE IF NOT EXISTS public."{name_of_sequence}"
         INCREMENT 1
         START 1
         MINVALUE 1
@@ -20,6 +22,11 @@ async def create_all():
         CACHE 1
         """
     )
+
+
+async def create_all():
+    conn = await _connect()
+    await create_sequence(name_of_sequence="Profile_id_seq", open_conn=conn)
     await conn.execute(
         """
         CREATE TABLE IF NOT EXISTS public."Profile"
@@ -39,16 +46,7 @@ async def create_all():
         )
         """
     )
-    await conn.execute(
-        """
-        CREATE SEQUENCE IF NOT EXISTS public."TakVideo_id_seq"
-        INCREMENT 1
-        START 1
-        MINVALUE 1
-        MAXVALUE 2147483647
-        CACHE 1
-        """
-    )
+    await create_sequence(name_of_sequence="TakVideo_id_seq", open_conn=conn)
     await conn.execute(
         """
         CREATE TABLE IF NOT EXISTS public."TakVideo"
@@ -68,16 +66,7 @@ async def create_all():
         )
         """
     )
-    await conn.execute(
-        """
-        CREATE SEQUENCE IF NOT EXISTS public."TakVideoLikes_id_seq"
-        INCREMENT 1
-        START 1
-        MINVALUE 1
-        MAXVALUE 2147483647
-        CACHE 1
-        """
-    )
+    await create_sequence(name_of_sequence="TakVideoLikes_id_seq", open_conn=conn)
     await conn.execute(
         """
         CREATE TABLE IF NOT EXISTS public."TakVideoLikes"
