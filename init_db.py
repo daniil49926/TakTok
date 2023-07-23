@@ -8,11 +8,13 @@ async def _connect() -> asyncpg.Connection:
     return await asyncpg.connect(dsn=settings.PG_DSN)
 
 
-async def create_all():
-    conn = await _connect()
-    await conn.execute(
-        """
-        CREATE SEQUENCE IF NOT EXISTS public."Profile_id_seq"
+async def create_sequence(
+    name_of_sequence: str,
+    open_conn: asyncpg.Connection
+) -> None:
+    await open_conn.execute(
+        f"""
+        CREATE SEQUENCE IF NOT EXISTS public."{name_of_sequence}"
         INCREMENT 1
         START 1
         MINVALUE 1
@@ -20,12 +22,11 @@ async def create_all():
         CACHE 1
         """
     )
-    await conn.execute(
-        f"""
-        ALTER SEQUENCE public."Profile_id_seq"
-            OWNER TO "{settings.PG_USER}"
-        """
-    )
+
+
+async def create_all():
+    conn = await _connect()
+    await create_sequence(name_of_sequence="Profile_id_seq", open_conn=conn)
     await conn.execute(
         """
         CREATE TABLE IF NOT EXISTS public."Profile"
@@ -45,28 +46,7 @@ async def create_all():
         )
         """
     )
-    await conn.execute(
-        f"""      
-        ALTER TABLE IF EXISTS public."Profile"
-            OWNER to "{settings.PG_USER}"
-        """
-    )
-    await conn.execute(
-        """
-        CREATE SEQUENCE IF NOT EXISTS public."TakVideo_id_seq"
-        INCREMENT 1
-        START 1
-        MINVALUE 1
-        MAXVALUE 2147483647
-        CACHE 1
-        """
-    )
-    await conn.execute(
-       f"""
-       ALTER SEQUENCE public."TakVideo_id_seq"
-            OWNER TO "{settings.PG_USER}"
-       """
-    )
+    await create_sequence(name_of_sequence="TakVideo_id_seq", open_conn=conn)
     await conn.execute(
         """
         CREATE TABLE IF NOT EXISTS public."TakVideo"
@@ -86,18 +66,41 @@ async def create_all():
         )
         """
     )
+    await create_sequence(name_of_sequence="TakVideoLikes_id_seq", open_conn=conn)
     await conn.execute(
-        f"""
-        ALTER TABLE IF EXISTS public."TakVideo"
-            OWNER to "{settings.PG_USER}"
+        """
+        CREATE TABLE IF NOT EXISTS public."TakVideoLikes"
+        (
+            id integer NOT NULL DEFAULT nextval('"TakVideoLikes_id_seq"'::regclass),
+            video_id integer NOT NULL,
+            user_id integer NOT NULL,
+            CONSTRAINT "TakVideoLikes_pkey" PRIMARY KEY (id),
+            CONSTRAINT "TakVideoLikes_video_id_fkey" FOREIGN KEY (video_id)
+                REFERENCES public."TakVideo" (id) MATCH SIMPLE
+                ON UPDATE CASCADE
+                ON DELETE CASCADE,
+            CONSTRAINT "TakVideoLikes_user_id_fkey" FOREIGN KEY (user_id)
+                REFERENCES public."Profile" (id) MATCH SIMPLE
+                ON UPDATE CASCADE
+                ON DELETE CASCADE
+        )
         """
     )
-
     await conn.close()
 
 
 async def drop_all():
     conn = await _connect()
+    await conn.execute(
+        """
+        DROP TABLE IF EXISTS public."TakVideoLikes"
+        """
+    )
+    await conn.execute(
+        """
+        DROP SEQUENCE IF EXISTS public."TakVideoLikes_id_seq"
+        """
+    )
     await conn.execute(
         """
         DROP TABLE IF EXISTS public."TakVideo"
