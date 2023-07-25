@@ -1,6 +1,7 @@
 import os
 
 from dataclasses import dataclass
+from asyncpg import Pool
 from core.utils.load_env import load_environ
 
 _BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,6 +23,10 @@ class __Settings:
     PG_DB: str = os.environ.get('PG_DB')
 
     PG_DSN: str = f"postgres://{PG_USER}:{PG_PASS}@{PG_HOST}:{PG_PORT}/{PG_DB}"
+
+    PG_POOL: Pool = None
+
+    SECRET_KEY_COOKIE_STORAGE: bytes = b'Thirty  two  length  bytes  key.'
 
 
 settings = __Settings()
