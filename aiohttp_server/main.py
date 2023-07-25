@@ -28,7 +28,9 @@ def run_server() -> None:
     app.on_cleanup.append(on_shutdown)
     setup_session(
         app=app,
-        storage=EncryptedCookieStorage(secret_key=settings.SECRET_KEY_COOKIE_STORAGE)
+        storage=EncryptedCookieStorage(
+            secret_key=settings.SECRET_KEY_COOKIE_STORAGE
+        )
     )
     setup_security(
         app=app,
