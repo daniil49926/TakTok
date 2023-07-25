@@ -6,7 +6,7 @@ class DBAuthorisationPolicy(AbstractAuthorizationPolicy):
     _sql_get_user_by_username = """
         SELECT 1 FROM public."Profile" pr 
             WHERE pr.username = $1
-    """
+    """ # noqa
 
     async def authorized_userid(self, identity):
         async with settings.PG_POOL.acquire() as coon:
