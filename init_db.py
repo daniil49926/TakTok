@@ -86,11 +86,42 @@ async def create_all():
         )
         """
     )
+    await create_sequence(name_of_sequence="Comment_id_seq", open_conn=conn)
+    await conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS public."Comment"
+        (
+            id integer NOT NULL DEFAULT nextval('"Comment_id_seq"'::regclass),
+            video_id integer NOT NULL,
+            user_id integer NOT NULL,
+            comment_text character varying(500) COLLATE pg_catalog."default" NOT NULL,
+            CONSTRAINT "Comment_pkey" PRIMARY KEY (id),
+            CONSTRAINT "Comment_video_id_fkey" FOREIGN KEY (video_id)
+                REFERENCES public."TakVideo" (id) MATCH SIMPLE
+                ON UPDATE CASCADE
+                ON DELETE CASCADE,
+            CONSTRAINT "Comment_user_id_fkey" FOREIGN KEY (user_id)
+                REFERENCES public."Profile" (id) MATCH SIMPLE
+                ON UPDATE CASCADE
+                ON DELETE CASCADE
+        )
+        """
+    )
     await conn.close()
 
 
 async def drop_all():
     conn = await _connect()
+    await conn.execute(
+        """
+        DROP TABLE IF EXISTS public."Comment"
+        """
+    )
+    await conn.execute(
+        """
+        DROP SEQUENCE IF EXISTS public."Comment_id_seq"
+        """
+    )
     await conn.execute(
         """
         DROP TABLE IF EXISTS public."TakVideoLikes"
