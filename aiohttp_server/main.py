@@ -1,8 +1,10 @@
 import argparse
+import aiohttp_jinja2
+import jinja2
 
 from aiohttp import web
 from aiohttp_security import setup as setup_security
-from aiohttp_security import SessionIdentityPolicy
+from aiohttp_security import SessionIdentityPolicy, authorized_userid
 from aiohttp_session import setup as setup_session
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from apps.profile.views import routes as routes_profile
@@ -19,6 +21,12 @@ def init_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+async def current_user_ctx_processor(request):
+    username = await authorized_userid(request)
+    is_anonymous = not bool(username)
+    return {'current_user': {'is_anonymous': is_anonymous}}
+
+
 def run_server() -> None:
     args = init_args()
     app = web.Application()
@@ -31,6 +39,11 @@ def run_server() -> None:
         storage=EncryptedCookieStorage(
             secret_key=settings.SECRET_KEY_COOKIE_STORAGE
         )
+    )
+    aiohttp_jinja2.setup(
+        app,
+        loader=jinja2.PackageLoader('aiohttp_server'),
+        context_processors=[current_user_ctx_processor],
     )
     setup_security(
         app=app,

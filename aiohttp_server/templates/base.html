@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>
+        TakTok:
+        <a href="{{ url('tak') }}">Home</a>
+        {% if current_user.is_anonymous %}
+            <a href="{{ url('login') }}">Login</a>
+        {% else %}
+            <a href="{{ url('logout') }}">Logout</a>
+        {% endif %}
+    </div>
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+</html>
