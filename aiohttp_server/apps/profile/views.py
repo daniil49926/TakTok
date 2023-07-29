@@ -18,7 +18,8 @@ async def login(request):
     return {}
 
 
-@routes.post('/profile/login/', name='login')
+@routes.post('/profile/login/', name='login_post')
+@aiohttp_jinja2.template('login.html')
 async def login(request):
     form = await request.post()
     async with settings.PG_POOL.acquire() as conn:
