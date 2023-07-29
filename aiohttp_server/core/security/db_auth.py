@@ -4,7 +4,7 @@ from core.settings import settings
 
 class DBAuthorisationPolicy(AbstractAuthorizationPolicy):
     _sql_get_user_by_username = """
-        SELECT 1 FROM public."Profile" pr 
+        SELECT username FROM public."Profile" pr 
             WHERE pr.username = $1
     """ # noqa
 

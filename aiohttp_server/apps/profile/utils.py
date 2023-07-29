@@ -1,5 +1,4 @@
 
-
 async def get_user_by_name(conn, name):
     _sql = """
         SELECT * FROM public."Profile" pr 
